@@ -206,7 +206,7 @@
 
   /* ---------- SERVICES ---------- */
   .services-grid{
-    display:grid;grid-template-columns:repeat(3,1fr);gap:0;
+    display:grid;grid-template-columns:repeat(4,1fr);gap:0;
     border-top:1px solid var(--line);
   }
   .service-col{
@@ -228,6 +228,10 @@
     font-size:12px;letter-spacing:.08em;color:var(--mid);
   }
   @media(max-width:900px){
+    .services-grid{grid-template-columns:repeat(2,1fr);}
+    .service-col:nth-child(2n){border-right:none;}
+  }
+  @media(max-width:560px){
     .services-grid{grid-template-columns:1fr;}
     .service-col{border-right:none;}
   }
@@ -292,9 +296,16 @@
   .footer-meta a{border-bottom:1px solid transparent;}
   .footer-meta a:hover{border-color:var(--mid);}
 
+  .reveal{
+    opacity:0;transform:translateY(28px);
+    transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1);
+  }
+  .reveal.visible{opacity:1;transform:translateY(0);}
+
   @media(prefers-reduced-motion:reduce){
     #intro{display:none;}
     body.locked{overflow:auto;height:auto;}
+    .reveal{opacity:1;transform:none;transition:none;}
   }
 </style>
 </head>
@@ -357,7 +368,7 @@
   <div class="hero-sub">Salon of beauty</div>
   <div class="hero-line"></div>
   <p class="hero-tagline">Красота, достойная короны</p>
-  <p class="hero-desc">Салон-парикмахерская «VIP» — парикмахерские, ногтевые и косметологические услуги для мужчин и женщин на ул. Бялыницкого-Бирули, 4.</p>
+  <p class="hero-desc">Салон-парикмахерская «VIP» в Могилёве — парикмахерские, ногтевые и косметологические услуги для мужчин и женщин на ул. Бялыницкого-Бирули, 4.</p>
   <div class="cta-row">
     <a class="btn btn-solid" href="https://www.instagram.com/salon__vip___?igsh=YTFlOHluN2Fyamg3" target="_blank" rel="noopener">Записаться в Direct</a>
     <a class="btn btn-ghost" href="#contacts">Позвонить в салон</a>
@@ -366,7 +377,7 @@
 
 <!-- ============ SERVICES ============ -->
 <section class="section" id="services">
-  <div class="section-head">
+  <div class="section-head reveal">
     <svg class="section-crown" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
       <polygon points="24,96 24,64 54,86 76,40 100,66 124,40 146,86 176,64 176,96" fill="#0b0b0b"/>
       <rect x="20" y="96" width="160" height="14" rx="2" fill="#0b0b0b"/>
@@ -380,17 +391,26 @@
   </div>
 
   <div class="services-grid">
-    <div class="service-col">
+    <div class="service-col reveal">
       <h3>Волосы</h3>
       <ul>
         <li>Женские и мужские стрижки, в т.ч. каре и каскад</li>
         <li>Стрижка горячими ножницами</li>
-        <li>Наращивание волос</li>
-        <li>Ботокс для волос</li>
-        <li>Кератиновое выпрямление</li>
+        <li>Окрашивание волос</li>
+        <li>Восстановление повреждённых волос</li>
+        <li>Женские причёски для взрослых и детей</li>
       </ul>
     </div>
-    <div class="service-col">
+    <div class="service-col reveal">
+      <h3>Барбер</h3>
+      <ul>
+        <li>Мужские стрижки</li>
+        <li>Укладка волос</li>
+        <li>Стрижка бровей</li>
+        <li>Стрижка усов и бороды</li>
+      </ul>
+    </div>
+    <div class="service-col reveal">
       <h3>Ногти</h3>
       <ul>
         <li>Маникюр и спа-маникюр</li>
@@ -400,14 +420,12 @@
         <li>Долговременное покрытие гель-лаком</li>
       </ul>
     </div>
-    <div class="service-col">
+    <div class="service-col reveal">
       <h3>Красота</h3>
       <ul>
         <li>Макияж</li>
-        <li>Наращивание ресниц</li>
         <li>Коррекция бровей</li>
         <li>Депиляция воском</li>
-        <li>Солярий Technosole (Италия)</li>
       </ul>
     </div>
   </div>
@@ -416,7 +434,7 @@
 
 <!-- ============ HOURS + CONTACTS ============ -->
 <div class="split" id="hours">
-  <div class="split-pane">
+  <div class="split-pane reveal">
     <p class="eyebrow" style="color:rgba(255,255,255,.5)">Режим работы</p>
     <h2 class="section-title">Часы <em>работы</em></h2>
     <div class="divider"></div>
@@ -427,7 +445,7 @@
     </div>
   </div>
 
-  <div class="split-pane" id="contacts">
+  <div class="split-pane reveal" id="contacts">
     <p class="eyebrow" style="color:rgba(255,255,255,.5)">Запись и адрес</p>
     <h2 class="section-title">Контакты</h2>
     <div class="divider"></div>
@@ -502,6 +520,21 @@
     if(window.scrollY > 20){ header.classList.add('scrolled'); }
     else { header.classList.remove('scrolled'); }
   });
+
+  var revealEls = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window){
+    var revealObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach(function(el){ revealObserver.observe(el); });
+  } else {
+    revealEls.forEach(function(el){ el.classList.add('visible'); });
+  }
 </script>
 </body>
 </html>
